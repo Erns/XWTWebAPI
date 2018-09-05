@@ -9,30 +9,30 @@ namespace XWTWebAPI.Controllers
 {
     public class ValuesController : ApiController
     {
-        // GET api/values
+        // GET api/values (READ)
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/values/5
+        // GET api/values/5 (READ)
         public string Get(int id)
         {
             return "value";
         }
 
-        // POST api/values
+        // POST api/values (CREATE)
         public void Post([FromBody]string value)
         {
 
         }
 
-        // PUT api/values/5
+        // PUT api/values/5 (UPDATE)
         public void Put(int id, [FromBody]string value)
         {
         }
 
-        // DELETE api/values/5
+        // DELETE api/values/5 (DELETE)
         public void Delete(int id)
         {
         }
