@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
@@ -62,17 +63,66 @@ namespace XWTWebAPI.Controllers
         }
 
         // POST api/values
-        public void Post([FromBody]string value)
+        public string Post([FromBody]string value)
         {
-            List<Player> result = JsonConvert.DeserializeObject<List<Player>>(value);
+            string strReturn = "";
+            try
+            {
+                List<Player> result = JsonConvert.DeserializeObject<List<Player>>(JsonConvert.DeserializeObject(value).ToString());
 
+                Console.Write("Test");
+            }
+            catch(Exception ex)
+            {
+                return ex.Message;
+            }
+
+            return "POST Success: " + strReturn;
         }
 
         // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
+        public string Put(int id, [FromBody]string value)
         {
-            List<Player> result = JsonConvert.DeserializeObject<List<Player>>(value);
+            string strReturn = "";
+            try
+            {
+                List<Player> result = JsonConvert.DeserializeObject<List<Player>>(JsonConvert.DeserializeObject(value).ToString());
 
+                DataTable dt = new DataTable();
+                dt.Columns.Add("Id", typeof(int));
+                dt.Columns.Add("Name", typeof(string));
+                dt.Columns.Add("Email", typeof(string));
+                dt.Columns.Add("Group", typeof(string));
+                dt.Columns.Add("Active", typeof(bool));
+                dt.Columns.Add("DateDeleted", typeof(DateTime));
+
+
+                foreach (Player player in result)
+                {
+                    dt.Rows.Add(player.Id, player.Name, player.Email, player.Group, player.Active, null);
+                }
+
+                using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
+                {
+                    using (SqlCommand sqlCmd = new SqlCommand("dbo.spPlayers_UPDATEINSERT_DT", sqlConn))
+                    {
+                        sqlConn.Open();
+                        sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        sqlCmd.Parameters.AddWithValue("@UserAccountId", id);
+                        sqlCmd.Parameters.Add("@PlayersDataTable", SqlDbType.Structured).Value = dt;
+
+                        sqlCmd.ExecuteNonQuery();
+
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+            return "PUT Success: " + strReturn;
         }
 
         // DELETE api/values/5
