@@ -32,7 +32,7 @@ namespace XWTWebAPI.Controllers
             return "Need ID";
         }
 
-        // GET api/values/5
+        // GET api/values/5 (READ)
         public string Get(int id)
         {
 
@@ -62,10 +62,9 @@ namespace XWTWebAPI.Controllers
             return JsonConvert.SerializeObject(players);
         }
 
-        // POST api/values
+        // POST api/values (CREATE)
         public string Post([FromBody]string value)
         {
-            string strReturn = "";
             try
             {
                 List<Player> result = JsonConvert.DeserializeObject<List<Player>>(JsonConvert.DeserializeObject(value).ToString());
@@ -77,13 +76,12 @@ namespace XWTWebAPI.Controllers
                 return ex.Message;
             }
 
-            return "POST Success: " + strReturn;
+            return "POST Success";
         }
 
-        // PUT api/values/5
+        // PUT api/values/5 (UPDATE)
         public string Put(int id, [FromBody]string value)
         {
-            string strReturn = "";
             try
             {
                 List<Player> result = JsonConvert.DeserializeObject<List<Player>>(JsonConvert.DeserializeObject(value).ToString());
@@ -122,10 +120,10 @@ namespace XWTWebAPI.Controllers
                 return ex.Message;
             }
 
-            return "PUT Success: " + strReturn;
+            return "PUT Success";
         }
 
-        // DELETE api/values/5
+        // DELETE api/values/5 (DELETE)
         public void Delete(int id)
         {
         }
