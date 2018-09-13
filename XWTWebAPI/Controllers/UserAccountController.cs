@@ -29,7 +29,7 @@ namespace XWTWebAPI.Controllers
                 sqlConn.Open();
 
                 //Check if user account exist
-                using (SqlCommand sqlCmd = new SqlCommand("dbo.spUserAccount_VALIDATE", sqlConn))
+                using (SqlCommand sqlCmd = new SqlCommand("dbo.spUserAccounts_VALIDATE", sqlConn))
                 {
                     sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
                     sqlCmd.Parameters.AddWithValue("@UserName", result.UserName);
@@ -59,7 +59,7 @@ namespace XWTWebAPI.Controllers
                 sqlConn.Open();
 
                 //Check if user account exist
-                using (SqlCommand sqlCmd = new SqlCommand("dbo.spUserAccount_EXISTS", sqlConn))
+                using (SqlCommand sqlCmd = new SqlCommand("dbo.spUserAccounts_EXISTS", sqlConn))
                 {
                     sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
                     sqlCmd.Parameters.AddWithValue("@UserName", result.UserName);
@@ -75,12 +75,11 @@ namespace XWTWebAPI.Controllers
                 }
 
                 //Create user
-                using (SqlCommand sqlCmd = new SqlCommand("dbo.spUserAccount_INSERT", sqlConn))
+                using (SqlCommand sqlCmd = new SqlCommand("dbo.spUserAccount_UPDATEINSERT", sqlConn))
                 {
                     sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    sqlCmd.Parameters.AddWithValue("@Name", result.Name);
-                    sqlCmd.Parameters.AddWithValue("@Password", result.Password); //Should already be hashed on the client side
                     sqlCmd.Parameters.AddWithValue("@UserName", result.UserName);
+                    sqlCmd.Parameters.AddWithValue("@Password", result.Password); //Should already be hashed on the client side
                     sqlCmd.Parameters.AddWithValue("@Email", result.Email);
                     sqlCmd.ExecuteNonQuery();
                 }
