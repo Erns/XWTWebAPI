@@ -73,6 +73,11 @@ namespace XWTWebAPI.Controllers
         {
             try
             {
+                if (!Utilities.IsValidated(Request.Headers))
+                {
+                    return "Validation fail";
+                }
+
                 List<Player> result = JsonConvert.DeserializeObject<List<Player>>(JsonConvert.DeserializeObject(value).ToString());
 
                 Console.Write("Test");
@@ -108,7 +113,7 @@ namespace XWTWebAPI.Controllers
 
                 foreach (Player player in result)
                 {
-                    dt.Rows.Add(player.Id, player.Name, player.Email, player.Group, player.Active, null);
+                    dt.Rows.Add(player.Id, player.Name, player.Email, player.Group, player.Active, player.DateDeleted);
                 }
 
                 using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
