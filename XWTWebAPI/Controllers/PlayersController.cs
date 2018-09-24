@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using XWTWebAPI.Classes;
 using XWTWebAPI.Models;
 
 namespace XWTWebAPI.Controllers
@@ -35,6 +36,11 @@ namespace XWTWebAPI.Controllers
         // GET api/values/5 (READ)
         public string Get(int id)
         {
+
+            if (!Utilities.IsValidated(Request.Headers))
+            {
+                return "Validation fail";
+            }
 
             players.Clear();
             using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
@@ -84,6 +90,11 @@ namespace XWTWebAPI.Controllers
         {
             try
             {
+                if (!Utilities.IsValidated(Request.Headers))
+                {
+                    return "Validation fail";
+                }
+
                 List<Player> result = JsonConvert.DeserializeObject<List<Player>>(JsonConvert.DeserializeObject(value).ToString());
 
                 DataTable dt = new DataTable();
@@ -126,6 +137,10 @@ namespace XWTWebAPI.Controllers
         // DELETE api/values/5 (DELETE)
         public void Delete(int id)
         {
+            if (!Utilities.IsValidated(Request.Headers))
+            {
+                //return "Validation fail";
+            }
         }
 
     }

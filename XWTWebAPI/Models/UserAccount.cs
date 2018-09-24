@@ -15,5 +15,7 @@ namespace XWTWebAPI.Models
         public string Password { get; set; }
         public string Email { get; set; }
         public bool IsAdmin { get; set; } = false;
+        public string APIPassword { get; set; }
+
     }
 }

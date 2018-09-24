@@ -72,6 +72,7 @@ namespace XWTWebAPI.Controllers
                                     user.Id = sqlRdr.GetInt32(sqlRdr.GetOrdinal("Id"));
                                     user.UserName = sqlRdr.GetString(sqlRdr.GetOrdinal("UserName"));
                                     user.Email = sqlRdr.GetString(sqlRdr.GetOrdinal("Email"));
+                                    user.APIPassword = sqlRdr.GetString(sqlRdr.GetOrdinal("PasswordAPI"));
                                     return JsonConvert.SerializeObject(user);
                                 }
                             }
@@ -115,6 +116,34 @@ namespace XWTWebAPI.Controllers
                         }
                     }
 
+                    string strAPIPassword = Guid.NewGuid().ToString();
+                    bool blnG2G = false;
+
+                    //Unlikely, but just in case let's ensure the APIPassword is unique in the database, in case it's needed to be unique down the road
+                    while (!blnG2G)
+                    {
+                        using (SqlCommand sqlCmd = new SqlCommand("dbo.spUserAccounts_EXISTS", sqlConn))
+                        {
+                            sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                            sqlCmd.Parameters.AddWithValue("@PasswordAPI", strAPIPassword);
+
+                            using (SqlDataReader sqlRdr = sqlCmd.ExecuteReader())
+                            {
+                                if (sqlRdr.HasRows)
+                                {
+                                    strAPIPassword = Guid.NewGuid().ToString();
+                                }
+                                else
+                                {
+                                    blnG2G = true;
+                                }
+                            }
+                        }
+                    }
+                    
+
+
+
                     //Create user
                     using (SqlCommand sqlCmd = new SqlCommand("dbo.spUserAccounts_UPDATEINSERT", sqlConn))
                     {
@@ -123,6 +152,7 @@ namespace XWTWebAPI.Controllers
                         sqlCmd.Parameters.AddWithValue("@UserName", result.UserName);
                         sqlCmd.Parameters.AddWithValue("@Password", result.Password); //Should already be hashed on the client side
                         sqlCmd.Parameters.AddWithValue("@Email", result.Email);
+                        sqlCmd.Parameters.AddWithValue("@APIPassword", strAPIPassword);
                         sqlCmd.ExecuteNonQuery();
                     }
                 }
