@@ -166,12 +166,12 @@ namespace XWTWebAPI.Controllers
         }
 
         // PUT api/values/5 (UPDATE)
-        public void Put(int id, [FromBody]string value)
+        public void Put(int userid, int id, [FromBody]string value)
         {
         }
 
         // DELETE api/values/5 (DELETE)
-        public void Delete(int id)
+        public void Delete(int userid, int id)
         {
         }
 

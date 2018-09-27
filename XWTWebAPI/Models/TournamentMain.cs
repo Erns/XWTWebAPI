@@ -31,6 +31,15 @@ namespace XWTWebAPI.Models
 
             return String.Join(",", lstIDs.ToArray());
         }
+
+        public TournamentMain(int Id, string Name, DateTime? StartDate, int MaxPoints, int RoundTimeLength)
+        {
+            this.Id = Id;
+            this.Name = Name;
+            this.StartDate = StartDate;
+            this.MaxPoints = MaxPoints;
+            this.RoundTimeLength = RoundTimeLength;
+        }
     }
 
     public class TournamentMainPlayer

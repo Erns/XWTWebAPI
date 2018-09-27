@@ -34,7 +34,7 @@ namespace XWTWebAPI.Controllers
         }
 
         // GET api/values/5 (READ)
-        public string Get(int id)
+        public string Get(int userid)
         {
 
             if (!Utilities.IsValidated(Request.Headers))
@@ -49,7 +49,7 @@ namespace XWTWebAPI.Controllers
                 {
                     sqlConn.Open();
                     sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    sqlCmd.Parameters.AddWithValue("@UserAccountId", id);
+                    sqlCmd.Parameters.AddWithValue("@UserAccountId", userid);
                     using (SqlDataReader sqlReader = sqlCmd.ExecuteReader())
                     {
                         while (sqlReader.Read())
@@ -91,7 +91,7 @@ namespace XWTWebAPI.Controllers
         }
 
         // PUT api/values/5 (UPDATE)
-        public string Put(int id, [FromBody]string value)
+        public string Put(int userid, [FromBody]string value)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace XWTWebAPI.Controllers
                     {
                         sqlConn.Open();
                         sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@UserAccountId", id);
+                        sqlCmd.Parameters.AddWithValue("@UserAccountId", userid);
                         sqlCmd.Parameters.Add("@PlayersDataTable", SqlDbType.Structured).Value = dt;
 
                         sqlCmd.ExecuteNonQuery();
