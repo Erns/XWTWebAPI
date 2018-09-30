@@ -101,7 +101,7 @@ namespace XWTWebAPI.Controllers
         }
 
         // POST api/values (CREATE)
-        public string Post(int id, [FromBody]string value)
+        public string Post(int userid, [FromBody]string value)
         {
             if (!Utilities.IsValidated(Request.Headers))
             {
@@ -112,7 +112,7 @@ namespace XWTWebAPI.Controllers
         }
 
         // PUT api/values/5 (UPDATE)
-        public string Put(int id, [FromBody]string value)
+        public string Put(int userid, [FromBody]string value)
         {
             if (!Utilities.IsValidated(Request.Headers))
             {
@@ -130,7 +130,7 @@ namespace XWTWebAPI.Controllers
                         sqlConn.Open();
                         sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
                         sqlCmd.Parameters.AddWithValue("@Id", result.Id);
-                        sqlCmd.Parameters.AddWithValue("@UserAccountId", id);
+                        sqlCmd.Parameters.AddWithValue("@UserAccountId", userid);
                         sqlCmd.Parameters.AddWithValue("@Name", result.Name);
                         sqlCmd.Parameters.AddWithValue("@StartDate", result.StartDate);
                         sqlCmd.Parameters.AddWithValue("@MaxPoints", result.MaxPoints);
@@ -150,7 +150,7 @@ namespace XWTWebAPI.Controllers
         }
 
         // DELETE api/values/5 (DELETE)
-        public void Delete(int id)
+        public void Delete(int userid, int id)
         {
             if (!Utilities.IsValidated(Request.Headers))
             {

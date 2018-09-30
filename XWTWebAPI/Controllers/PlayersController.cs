@@ -16,18 +16,9 @@ namespace XWTWebAPI.Controllers
     {
         List<Player> players = new List<Player>();
        
-        private void setupTest()
-        {
-            players.Clear();
-            players.Add(new Player(1, "Test 1", ""));
-            players.Add(new Player(2, "test 2", "asdf@asdf.com"));
-            players.Add(new Player(3, "test 3", "", "Sparta"));
-        }
-
         // GET api/values
         public string Get()
         {
-            setupTest();
             var test = JsonConvert.SerializeObject(players);
 
             return "Need ID";
