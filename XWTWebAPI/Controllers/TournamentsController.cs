@@ -68,11 +68,13 @@ namespace XWTWebAPI.Controllers
             tournaments.Clear();
             try
             {
+                //Grab the main tournament information
                 using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
                 {
+                    sqlConn.Open();
+
                     using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournaments_GET", sqlConn))
                     {
-                        sqlConn.Open();
                         sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
                         sqlCmd.Parameters.AddWithValue("@UserAccountId", userid);
                         sqlCmd.Parameters.AddWithValue("@TournamentId", id);
@@ -90,6 +92,42 @@ namespace XWTWebAPI.Controllers
                             }
                         }
                     }
+
+                    //Grab all the players associated with this tournament
+                    foreach (TournamentMain newTournament in tournaments)
+                    {
+                        using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsPlayers_GET", sqlConn))
+                        {
+                            sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                            sqlCmd.Parameters.AddWithValue("@TournamentId", newTournament.Id);
+                            using (SqlDataReader sqlReader = sqlCmd.ExecuteReader())
+                            {
+                                while (sqlReader.Read())
+                                {
+                                    TournamentMainPlayer player = new TournamentMainPlayer
+                                    {
+                                        Id = sqlReader.GetInt32(sqlReader.GetOrdinal("Id"))
+                                        , TournamentId = sqlReader.GetInt32(sqlReader.GetOrdinal("TournamentId"))
+                                        , PlayerId = sqlReader.GetInt32(sqlReader.GetOrdinal("PlayerId"))
+                                        , OpponentIdsBlobbed = sqlReader.GetString(sqlReader.GetOrdinal("OpponentIds"))
+                                        , PlayerName = sqlReader.GetString(sqlReader.GetOrdinal("PlayerName"))
+                                        , Active = sqlReader.GetBoolean(sqlReader.GetOrdinal("Active"))
+                                        , Bye = sqlReader.GetBoolean(sqlReader.GetOrdinal("Bye"))
+                                        , ByeCount = sqlReader.GetInt32(sqlReader.GetOrdinal("ByeCount"))
+                                        , RoundsPlayed = sqlReader.GetInt32(sqlReader.GetOrdinal("RoundsPlayed"))
+                                        , Rank = sqlReader.GetInt32(sqlReader.GetOrdinal("Rank"))
+                                        , Score = sqlReader.GetInt32(sqlReader.GetOrdinal("Score"))
+                                        , MOV = sqlReader.GetInt32(sqlReader.GetOrdinal("MOV"))
+                                        , SOS = sqlReader.GetDecimal(sqlReader.GetOrdinal("SOS"))
+                                    };
+
+                                    newTournament.Players.Add(player);
+                                }
+                            }
+                        }
+                    }
+
+                    //TODO Get Round info
                 }
             }
             catch (Exception ex)
@@ -138,6 +176,59 @@ namespace XWTWebAPI.Controllers
 
                         sqlCmd.ExecuteNonQuery();
                     }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+            return "PUT Success";
+        }
+
+        public string Put(int userid, int id, [FromBody]string value)
+        {
+            if (!Utilities.IsValidated(Request.Headers))
+            {
+                return "Validation fail";
+            }
+
+            try
+            {
+                TournamentMain result = JsonConvert.DeserializeObject<TournamentMain>(JsonConvert.DeserializeObject(value).ToString());
+
+                using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
+                {
+                    int intCount = 0;
+                    sqlConn.Open();
+                    foreach (TournamentMainPlayer player in result.Players)
+                    {                    
+                        using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsPlayers_UPDATEINSERT", sqlConn))
+                        {
+                            sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                            sqlCmd.Parameters.AddWithValue("@Id", player.Id);
+                            sqlCmd.Parameters.AddWithValue("@TournamentId", id);
+                            sqlCmd.Parameters.AddWithValue("@PlayerId", player.PlayerId);
+                            sqlCmd.Parameters.AddWithValue("@OpponentIds", player.OpponentIdsBlobbed);
+                            sqlCmd.Parameters.AddWithValue("@PlayerName", player.PlayerName);
+                            sqlCmd.Parameters.AddWithValue("@Active", player.Active);
+                            sqlCmd.Parameters.AddWithValue("@Bye", player.Bye);
+                            sqlCmd.Parameters.AddWithValue("@ByeCount", player.ByeCount);
+                            sqlCmd.Parameters.AddWithValue("@RoundsPlayed", player.RoundsPlayed);
+                            sqlCmd.Parameters.AddWithValue("@Rank", player.Rank);
+                            sqlCmd.Parameters.AddWithValue("@Score", player.Score);
+                            sqlCmd.Parameters.AddWithValue("@MOV", player.MOV);
+                            sqlCmd.Parameters.AddWithValue("@SOS", player.SOS);
+
+                            sqlCmd.ExecuteNonQuery();
+                            
+                            intCount++;
+                        }
+                    }
+
+                    return "PUT Success:  Updated " + intCount;
+
                 }
 
             }

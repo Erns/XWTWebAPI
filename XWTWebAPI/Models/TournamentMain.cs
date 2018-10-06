@@ -48,7 +48,7 @@ namespace XWTWebAPI.Models
         public int Id { get; set; }
 
         //FK
-        public int TournmentId { get; set; }
+        public int TournamentId { get; set; }
 
         //FK
         public int PlayerId { get; set; }
@@ -75,7 +75,7 @@ namespace XWTWebAPI.Models
         public int Id { get; set; }
 
         //FK
-        public int TournmentId { get; set; }
+        public int TournamentId { get; set; }
         public int Number { get; set; }
         public bool Swiss { get; set; } = true;
         public DateTime RoundTimeEnd { get; set; }
