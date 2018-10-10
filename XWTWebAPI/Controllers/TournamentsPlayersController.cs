@@ -53,30 +53,51 @@ namespace XWTWebAPI.Controllers
                 return "Validation fail";
             }
 
-            TournamentMain tournament = JsonConvert.DeserializeObject<TournamentMain>(JsonConvert.DeserializeObject(value).ToString());
-
-            using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
+            try
             {
-                
-                //Delete all players currently linked to tournament
+                TournamentMain result = JsonConvert.DeserializeObject<TournamentMain>(JsonConvert.DeserializeObject(value).ToString());
 
-                //Insert players
-                foreach (TournamentMainPlayer player in tournament.Players)
+                using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
                 {
-                    using (SqlCommand sqlCmd = new SqlCommand("dbo.", sqlConn))
-                    {
-                        sqlConn.Open();
-                        sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@UserAccountId", userid);
-                        sqlCmd.Parameters.AddWithValue("@TournamentId", tournament.Id);
-                        sqlCmd.Parameters.AddWithValue("@Id", player.Id);
-                        sqlCmd.Parameters.AddWithValue("@Name", player.PlayerName);
+                    int intCount = 0;
+                    sqlConn.Open();
 
-                        sqlCmd.ExecuteNonQuery();
+                    if (result.Id > 0)
+                    {
+                        foreach (TournamentMainPlayer player in result.Players)
+                        {
+                            using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsPlayers_UPDATEINSERT", sqlConn))
+                            {
+                                sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                                sqlCmd.Parameters.AddWithValue("@Id", player.Id);
+                                sqlCmd.Parameters.AddWithValue("@TournamentId", id);
+                                sqlCmd.Parameters.AddWithValue("@PlayerId", player.PlayerId);
+                                sqlCmd.Parameters.AddWithValue("@OpponentIds", player.OpponentIdsBlobbed);
+                                sqlCmd.Parameters.AddWithValue("@PlayerName", player.PlayerName);
+                                sqlCmd.Parameters.AddWithValue("@Active", player.Active);
+                                sqlCmd.Parameters.AddWithValue("@Bye", player.Bye);
+                                sqlCmd.Parameters.AddWithValue("@ByeCount", player.ByeCount);
+                                sqlCmd.Parameters.AddWithValue("@RoundsPlayed", player.RoundsPlayed);
+                                sqlCmd.Parameters.AddWithValue("@Rank", player.Rank);
+                                sqlCmd.Parameters.AddWithValue("@Score", player.Score);
+                                sqlCmd.Parameters.AddWithValue("@MOV", player.MOV);
+                                sqlCmd.Parameters.AddWithValue("@SOS", player.SOS);
+
+                                sqlCmd.ExecuteNonQuery();
+
+                                intCount++;
+                            }
+                        }
                     }
+
+                    return "PUT Success:  Updated " + intCount;
+
                 }
-                
-               
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
             }
 
             return "Put";

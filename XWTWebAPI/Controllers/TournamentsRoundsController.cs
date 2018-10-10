@@ -1,0 +1,136 @@
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using XWTWebAPI.Classes;
+using XWTWebAPI.Models;
+
+namespace XWTWebAPI.Controllers
+{
+    public class TournamentsRoundsController : ApiController
+    {
+        // GET api/values (READ)
+        public IEnumerable<string> Get()
+        {
+            if (!Utilities.IsValidated(Request.Headers))
+            {
+                return new string[] { "Validation fail" };
+            }
+
+            return new string[] { "value1", "value2" };
+        }
+
+        // GET api/values/5 (READ)
+        public string Get(int userid, int id)
+        {
+            if (!Utilities.IsValidated(Request.Headers))
+            {
+                return "Validation fail";
+            }
+
+            return "value";
+        }
+
+        // POST api/values (CREATE)
+        public string Post([FromBody]string value)
+        {
+            if (!Utilities.IsValidated(Request.Headers))
+            {
+                return "Validation fail";
+            }
+            return "post";
+        }
+
+        // PUT api/values/5 (UPDATE)
+        public string Put(int userid, int id, [FromBody]string value)
+        {
+            if (!Utilities.IsValidated(Request.Headers))
+            {
+                return "Validation fail";
+            }
+
+            try
+            {
+                TournamentMainRound result = JsonConvert.DeserializeObject<TournamentMainRound>(JsonConvert.DeserializeObject(value).ToString());
+
+                using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
+                {
+                    sqlConn.Open();
+
+                    //Create new round
+                    using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsRounds_UPDATEINSERT", sqlConn))
+                    {
+                        sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        sqlCmd.Parameters.AddWithValue("@TournamentId", id);
+                        sqlCmd.Parameters.AddWithValue("@PlayerId", result.TournamentId);
+                        sqlCmd.Parameters.AddWithValue("@Number", result.Number);
+                        sqlCmd.Parameters.AddWithValue("@Swiss", result.Swiss);
+                        sqlCmd.Parameters.AddWithValue("@RoundTimeEnd", result.RoundTimeEnd);
+
+                        SqlParameter outputParameter = new SqlParameter("@Id", SqlDbType.Int);
+                        outputParameter.Value = id;
+                        outputParameter.Direction = ParameterDirection.InputOutput;
+
+                        sqlCmd.Parameters.Add(outputParameter);
+
+                        //Grab the new ID, if applicable
+                        using (SqlDataReader sqlRdr = sqlCmd.ExecuteReader())
+                        {
+                            id = Convert.ToInt32(outputParameter.Value);
+                        }
+                    }
+
+                    ////Create the new tables for said round
+                    //foreach (TournamentMainRoundTable table in result.Tables)
+                    //{
+                    //    using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsRounds_UPDATEINSERT", sqlConn))
+                    //    {
+                    //        sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    //        sqlCmd.Parameters.AddWithValue("@TournamentId", id);
+                    //        sqlCmd.Parameters.AddWithValue("@PlayerId", result.TournamentId);
+                    //        sqlCmd.Parameters.AddWithValue("@Number", result.Number);
+                    //        sqlCmd.Parameters.AddWithValue("@Swiss", result.Swiss);
+                    //        sqlCmd.Parameters.AddWithValue("@RoundTimeEnd", result.RoundTimeEnd);
+
+                    //        SqlParameter outputParameter = new SqlParameter("@Id", SqlDbType.Int);
+                    //        outputParameter.Value = id;
+                    //        outputParameter.Direction = ParameterDirection.InputOutput;
+
+                    //        sqlCmd.Parameters.Add(outputParameter);
+
+                    //        using (SqlDataReader sqlRdr = sqlCmd.ExecuteReader())
+                    //        {
+                    //            id = Convert.ToInt32(outputParameter.Value);
+                    //        }
+                    //    }
+                    //}
+                    
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+            return "Put";
+        }
+
+        // DELETE api/values/5 (DELETE)
+        public string Delete(int id)
+        {
+            if (!Utilities.IsValidated(Request.Headers))
+            {
+                return "Validation fail";
+            }
+            return "Delete";
+
+        }
+
+    }
+}

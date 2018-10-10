@@ -149,44 +149,7 @@ namespace XWTWebAPI.Controllers
             return "";
         }
 
-        // PUT api/values/5 (UPDATE)
-        public string Put(int userid, [FromBody]string value)
-        {
-            if (!Utilities.IsValidated(Request.Headers))
-            {
-                return "Validation fail";
-            }
-
-            try
-            {
-                TournamentMain result = JsonConvert.DeserializeObject<TournamentMain>(JsonConvert.DeserializeObject(value).ToString());
-
-                using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
-                {
-                    using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournaments_UPDATEINSERT", sqlConn))
-                    {
-                        sqlConn.Open();
-                        sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@Id", result.Id);
-                        sqlCmd.Parameters.AddWithValue("@UserAccountId", userid);
-                        sqlCmd.Parameters.AddWithValue("@Name", result.Name);
-                        sqlCmd.Parameters.AddWithValue("@StartDate", result.StartDate);
-                        sqlCmd.Parameters.AddWithValue("@MaxPoints", result.MaxPoints);
-                        sqlCmd.Parameters.AddWithValue("@RoundTimeLength", result.RoundTimeLength);
-
-                        sqlCmd.ExecuteNonQuery();
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-
-            return "PUT Success";
-        }
-
+        // PUT api/values/5 (UPDATE)     
         public string Put(int userid, int id, [FromBody]string value)
         {
             if (!Utilities.IsValidated(Request.Headers))
@@ -200,35 +163,20 @@ namespace XWTWebAPI.Controllers
 
                 using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
                 {
-                    int intCount = 0;
                     sqlConn.Open();
-                    foreach (TournamentMainPlayer player in result.Players)
-                    {                    
-                        using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsPlayers_UPDATEINSERT", sqlConn))
-                        {
-                            sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
-                            sqlCmd.Parameters.AddWithValue("@Id", player.Id);
-                            sqlCmd.Parameters.AddWithValue("@TournamentId", id);
-                            sqlCmd.Parameters.AddWithValue("@PlayerId", player.PlayerId);
-                            sqlCmd.Parameters.AddWithValue("@OpponentIds", player.OpponentIdsBlobbed);
-                            sqlCmd.Parameters.AddWithValue("@PlayerName", player.PlayerName);
-                            sqlCmd.Parameters.AddWithValue("@Active", player.Active);
-                            sqlCmd.Parameters.AddWithValue("@Bye", player.Bye);
-                            sqlCmd.Parameters.AddWithValue("@ByeCount", player.ByeCount);
-                            sqlCmd.Parameters.AddWithValue("@RoundsPlayed", player.RoundsPlayed);
-                            sqlCmd.Parameters.AddWithValue("@Rank", player.Rank);
-                            sqlCmd.Parameters.AddWithValue("@Score", player.Score);
-                            sqlCmd.Parameters.AddWithValue("@MOV", player.MOV);
-                            sqlCmd.Parameters.AddWithValue("@SOS", player.SOS);
 
-                            sqlCmd.ExecuteNonQuery();
-                            
-                            intCount++;
-                        }
+                    using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournaments_UPDATEINSERT", sqlConn))
+                    {
+                        sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        sqlCmd.Parameters.AddWithValue("@Id", id);
+                        sqlCmd.Parameters.AddWithValue("@UserAccountId", userid);
+                        sqlCmd.Parameters.AddWithValue("@Name", result.Name);
+                        sqlCmd.Parameters.AddWithValue("@StartDate", result.StartDate);
+                        sqlCmd.Parameters.AddWithValue("@MaxPoints", result.MaxPoints);
+                        sqlCmd.Parameters.AddWithValue("@RoundTimeLength", result.RoundTimeLength);
+
+                        sqlCmd.ExecuteNonQuery();
                     }
-
-                    return "PUT Success:  Updated " + intCount;
-
                 }
 
             }
