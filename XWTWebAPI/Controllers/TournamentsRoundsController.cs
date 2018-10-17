@@ -127,33 +127,34 @@ namespace XWTWebAPI.Controllers
 
             try
             {
-                TournamentMainRound round = JsonConvert.DeserializeObject<TournamentMainRound>(JsonConvert.DeserializeObject(value).ToString());
+                //TournamentMainRound round = JsonConvert.DeserializeObject<TournamentMainRound>(JsonConvert.DeserializeObject(value).ToString());
+                TournamentMainRoundTable table = JsonConvert.DeserializeObject<TournamentMainRoundTable>(JsonConvert.DeserializeObject(value).ToString());
 
                 using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
                 {
                     sqlConn.Open();
 
-                    //Create new round
-                    using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsRounds_UPDATEINSERT", sqlConn))
-                    {
-                        sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
-                        sqlCmd.Parameters.AddWithValue("@TournamentId", round.TournamentId);
-                        sqlCmd.Parameters.AddWithValue("@Number", round.Number);
-                        sqlCmd.Parameters.AddWithValue("@Swiss", round.Swiss);
-                        sqlCmd.Parameters.AddWithValue("@RoundTimeEnd", round.RoundTimeEnd);
+                    ////Create new round
+                    //using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsRounds_UPDATEINSERT", sqlConn))
+                    //{
+                    //    sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    //    sqlCmd.Parameters.AddWithValue("@TournamentId", round.TournamentId);
+                    //    sqlCmd.Parameters.AddWithValue("@Number", round.Number);
+                    //    sqlCmd.Parameters.AddWithValue("@Swiss", round.Swiss);
+                    //    sqlCmd.Parameters.AddWithValue("@RoundTimeEnd", round.RoundTimeEnd);
 
-                        SqlParameter outputParameter = new SqlParameter("@Id", SqlDbType.Int);
-                        outputParameter.Value = id;
-                        outputParameter.Direction = ParameterDirection.InputOutput;
+                    //    SqlParameter outputParameter = new SqlParameter("@Id", SqlDbType.Int);
+                    //    outputParameter.Value = id;
+                    //    outputParameter.Direction = ParameterDirection.InputOutput;
 
-                        sqlCmd.Parameters.Add(outputParameter);
+                    //    sqlCmd.Parameters.Add(outputParameter);
 
-                        //Grab the new ID, if applicable
-                        using (SqlDataReader sqlRdr = sqlCmd.ExecuteReader())
-                        {
-                            id = Convert.ToInt32(outputParameter.Value);
-                        }
-                    }
+                    //    //Grab the new ID, if applicable
+                    //    using (SqlDataReader sqlRdr = sqlCmd.ExecuteReader())
+                    //    {
+                    //        id = Convert.ToInt32(outputParameter.Value);
+                    //    }
+                    //}
 
 
                     //Create/update table data sent in
@@ -173,12 +174,12 @@ namespace XWTWebAPI.Controllers
                     dt.Columns.Add("Player2Score", typeof(int));
                     dt.Columns.Add("Player2Winner", typeof(bool));
 
-                    foreach (TournamentMainRoundTable table in round.Tables)
-                    {
+                    //foreach (TournamentMainRoundTable table in round.Tables)
+                    //{
                         dt.Rows.Add(table.Id, table.RoundId, table.Number, table.TableName, table.ScoreTied, table.Bye
                             , table.Player1Id, table.Player1Name, table.Player1Score, table.Player1Winner
                             , table.Player2Id, table.Player2Name, table.Player2Score, table.Player2Winner);
-                    }
+                    //}
 
                     using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsRoundsTable_UPDATEINSERT_DT", sqlConn))
                     {
@@ -200,14 +201,27 @@ namespace XWTWebAPI.Controllers
         }
 
         // DELETE api/values/5 (DELETE)
-        public string Delete(int id)
+        public string Delete(int userid, int id)
         {
             if (!Utilities.IsValidated(Request.Headers))
             {
                 return "Validation fail";
             }
-            return "Delete";
 
+            using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
+            {
+                sqlConn.Open();
+
+                //Create new round
+                using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsRounds_DELETE", sqlConn))
+                {
+                    sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    sqlCmd.Parameters.AddWithValue("@RoundId", id);
+                    sqlCmd.ExecuteNonQuery();
+                }
+            }
+
+            return "DELETE: Succcess";
         }
 
     }

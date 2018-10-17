@@ -68,6 +68,7 @@ namespace XWTWebAPI.Controllers
                         {
                             using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsPlayers_UPDATEINSERT", sqlConn))
                             {
+                                //TODO:  Add logic to stored proc to search for an id if playerId exist for tournament to update instead of insert
                                 sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
                                 sqlCmd.Parameters.AddWithValue("@Id", player.Id);
                                 sqlCmd.Parameters.AddWithValue("@TournamentId", id);
