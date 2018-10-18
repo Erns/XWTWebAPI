@@ -94,6 +94,7 @@ namespace XWTWebAPI.Controllers
                     }
 
                     //Grab all the players associated with this tournament
+                    //TODO ensure we're grabbing all players, not just active.  Getting error going into a tournament with 8 players in first rounds, and 4 in the current 
                     foreach (TournamentMain newTournament in tournaments)
                     {
                         using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsPlayers_GET", sqlConn))
