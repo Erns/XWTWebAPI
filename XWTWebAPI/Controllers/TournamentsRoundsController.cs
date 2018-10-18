@@ -183,12 +183,10 @@ namespace XWTWebAPI.Controllers
 
                     using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsRoundsTable_UPDATEINSERT_DT", sqlConn))
                     {
-                        sqlConn.Open();
                         sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
                         sqlCmd.Parameters.AddWithValue("@RoundId", id);
                         sqlCmd.Parameters.Add("@TableDataTable", SqlDbType.Structured).Value = dt;
                         sqlCmd.ExecuteNonQuery();
-
                     }
                 } 
             }
