@@ -181,6 +181,7 @@
     <Compile Include="Controllers\TournamentsController.cs" />
     <Compile Include="Controllers\TournamentsPlayersController.cs" />
     <Compile Include="Controllers\TournamentsRoundsController.cs" />
+    <Compile Include="Controllers\TournamentsSearchController.cs" />
     <Compile Include="Controllers\UserAccountController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">

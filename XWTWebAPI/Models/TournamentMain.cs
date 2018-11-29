@@ -16,6 +16,7 @@ namespace XWTWebAPI.Models
         public int MaxPoints { get; set; }
         public int RoundTimeLength { get; set; }
         public Nullable<DateTime> DateDeleted { get; set; } = null;
+        public bool PublicSearch { get; set; } = false;
 
         public List<TournamentMainPlayer> Players { get; set; } = new List<TournamentMainPlayer>();
 
@@ -32,13 +33,14 @@ namespace XWTWebAPI.Models
             return String.Join(",", lstIDs.ToArray());
         }
 
-        public TournamentMain(int Id, string Name, DateTime? StartDate, int MaxPoints, int RoundTimeLength)
+        public TournamentMain(int Id, string Name, DateTime? StartDate, int MaxPoints, int RoundTimeLength, bool PublicSearch)
         {
             this.Id = Id;
             this.Name = Name;
             this.StartDate = StartDate;
             this.MaxPoints = MaxPoints;
             this.RoundTimeLength = RoundTimeLength;
+            this.PublicSearch = PublicSearch;
         }
     }
 

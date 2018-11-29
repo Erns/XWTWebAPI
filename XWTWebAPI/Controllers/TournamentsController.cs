@@ -38,11 +38,12 @@ namespace XWTWebAPI.Controllers
                             while (sqlReader.Read())
                             {
                                 tournaments.Add(new TournamentMain(
-                                    sqlReader.GetInt32(sqlReader.GetOrdinal("Id"))
-                                    , sqlReader.GetString(sqlReader.GetOrdinal("Name"))
-                                    , sqlReader.GetDateTime(sqlReader.GetOrdinal("StartDate"))
-                                    , sqlReader.GetInt32(sqlReader.GetOrdinal("MaxPoints"))
-                                    , sqlReader.GetInt32(sqlReader.GetOrdinal("RoundTimeLength"))
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("Id")),
+                                    sqlReader.GetString(sqlReader.GetOrdinal("Name")),
+                                    sqlReader.GetDateTime(sqlReader.GetOrdinal("StartDate")),
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("MaxPoints")),
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("RoundTimeLength")),
+                                    sqlReader.GetBoolean(sqlReader.GetOrdinal("PublicSearch"))
                                 ));
                             }
                         }
@@ -83,11 +84,12 @@ namespace XWTWebAPI.Controllers
                             while (sqlReader.Read())
                             {
                                 tournaments.Add(new TournamentMain(
-                                    sqlReader.GetInt32(sqlReader.GetOrdinal("Id"))
-                                    , sqlReader.GetString(sqlReader.GetOrdinal("Name"))
-                                    , sqlReader.GetDateTime(sqlReader.GetOrdinal("StartDate"))
-                                    , sqlReader.GetInt32(sqlReader.GetOrdinal("MaxPoints"))
-                                    , sqlReader.GetInt32(sqlReader.GetOrdinal("RoundTimeLength"))
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("Id")),
+                                    sqlReader.GetString(sqlReader.GetOrdinal("Name")),
+                                    sqlReader.GetDateTime(sqlReader.GetOrdinal("StartDate")),
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("MaxPoints")),
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("RoundTimeLength")),
+                                    sqlReader.GetBoolean(sqlReader.GetOrdinal("PublicSearch"))
                                 ));
                             }
                         }
@@ -232,6 +234,7 @@ namespace XWTWebAPI.Controllers
                         sqlCmd.Parameters.AddWithValue("@StartDate", result.StartDate);
                         sqlCmd.Parameters.AddWithValue("@MaxPoints", result.MaxPoints);
                         sqlCmd.Parameters.AddWithValue("@RoundTimeLength", result.RoundTimeLength);
+                        sqlCmd.Parameters.AddWithValue("@PublicSearch", result.PublicSearch);
 
                         sqlCmd.ExecuteNonQuery();
                     }
