@@ -41,36 +41,33 @@ namespace XWTWebAPI.Controllers
             {
                 TournamentMain result = JsonConvert.DeserializeObject<TournamentMain>(JsonConvert.DeserializeObject(value).ToString());
 
-                //using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
-                //{
-                //    sqlConn.Open();
+                using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
+                {
+                    sqlConn.Open();
 
-                //    using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsSearch_GET", sqlConn))
-                //    {
-                //        sqlConn.Open();
-                //        sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
-                //        //sqlCmd.Parameters.AddWithValue("@UserAccountId", userid);
- //               @TournamentName VarChar(200) = ''
-	//, @TournamentDate smalldatetime = NULL
-                //        using (SqlDataReader sqlReader = sqlCmd.ExecuteReader())
-                //        {
-                //            while (sqlReader.Read())
-                //            {
-                //                returnTournaments.Add(new TournamentMain(
-                //                    sqlReader.GetInt32(sqlReader.GetOrdinal("Id")),
-                //sqlReader.GetString(sqlReader.GetOrdinal("Name")),
-                //                    sqlReader.GetDateTime(sqlReader.GetOrdinal("StartDate")),
-                //                    sqlReader.GetInt32(sqlReader.GetOrdinal("MaxPoints")),
-                //                    sqlReader.GetInt32(sqlReader.GetOrdinal("RoundTimeLength")),
-                //                    sqlReader.GetBoolean(sqlReader.GetOrdinal("PublicSearch"))
-                //                ));
-                //            }
-                //        }
-                //    }
-                //}
+                    using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsSearch_GET", sqlConn))
+                    {
+                        sqlConn.Open();
+                        sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        sqlCmd.Parameters.AddWithValue("@TournamentName", result.Name);
+                        sqlCmd.Parameters.AddWithValue("@TournamentDate", result.StartDate);
 
-                return "hit";
-
+                        using (SqlDataReader sqlReader = sqlCmd.ExecuteReader())
+                        {
+                            while (sqlReader.Read())
+                            {
+                                returnTournaments.Add(new TournamentMain(
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("Id")),
+                                    sqlReader.GetString(sqlReader.GetOrdinal("Name")),
+                                    sqlReader.GetDateTime(sqlReader.GetOrdinal("StartDate")),
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("MaxPoints")),
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("RoundTimeLength")),
+                                    sqlReader.GetBoolean(sqlReader.GetOrdinal("PublicSearch"))
+                                ));
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
