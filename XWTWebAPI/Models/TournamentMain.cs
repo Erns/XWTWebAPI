@@ -69,6 +69,10 @@ namespace XWTWebAPI.Models
         public int MOV { get; set; }
         public decimal SOS { get; set; }
 
+        public int API_Id { get; set; } = 0;
+        public int API_UserAccountId { get; set; } = 0;
+
+
     }
 
     public class TournamentMainRound
