@@ -22,8 +22,44 @@ namespace XWTWebAPI.Controllers
                 return "Validation fail";
             }
 
-            //No luck with FromBody within a GET
-            return "";
+            List<TournamentMain> returnTournaments = new List<TournamentMain>();
+
+            //Get all the tournaments the user is registered for
+            try
+            {
+                using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
+                {
+                    sqlConn.Open();
+
+                    using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsSearch_REGISTERED_FOR", sqlConn))
+                    {
+                        sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        sqlCmd.Parameters.AddWithValue("@UserAccountId", userid);
+
+                        using (SqlDataReader sqlReader = sqlCmd.ExecuteReader())
+                        {
+                            while (sqlReader.Read())
+                            {
+                                returnTournaments.Add(new TournamentMain(
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("Id")),
+                                    sqlReader.GetString(sqlReader.GetOrdinal("Name")),
+                                    sqlReader.GetDateTime(sqlReader.GetOrdinal("StartDate")),
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("MaxPoints")),
+                                    sqlReader.GetInt32(sqlReader.GetOrdinal("RoundTimeLength")),
+                                    sqlReader.GetBoolean(sqlReader.GetOrdinal("PublicSearch"))
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+
+            return JsonConvert.SerializeObject(returnTournaments);
 
         }
 
@@ -39,6 +75,8 @@ namespace XWTWebAPI.Controllers
 
             try
             {
+                //Searching and getting any public tournaments we find that match the criteria
+
                 TournamentMain result = JsonConvert.DeserializeObject<TournamentMain>(JsonConvert.DeserializeObject(value).ToString());
 
                 using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
@@ -77,8 +115,35 @@ namespace XWTWebAPI.Controllers
         }
 
         // PUT api/values/5 (UPDATE)
-        public void Put(int id, [FromBody]string value)
+        public string Put(int userid, int id)
         {
+            if (!Utilities.IsValidated(Request.Headers))
+            {
+                return "Validation fail";
+            }
+
+
+            try
+            {
+                using (SqlConnection sqlConn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["XWTWebConnectionString"].ToString()))
+                {
+                    sqlConn.Open();
+
+                    using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsSearch_REGISTER", sqlConn))
+                    {
+                        sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        sqlCmd.Parameters.AddWithValue("@UserAccountId", userid);
+                        sqlCmd.Parameters.AddWithValue("@TournamentId", id);
+                        sqlCmd.ExecuteNonQuery();
+
+                        return "PUT: Success";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
 
         // DELETE api/values/5 (DELETE)
