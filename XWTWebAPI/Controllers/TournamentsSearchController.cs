@@ -47,7 +47,6 @@ namespace XWTWebAPI.Controllers
 
                     using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsSearch_GET", sqlConn))
                     {
-                        sqlConn.Open();
                         sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
                         sqlCmd.Parameters.AddWithValue("@TournamentName", result.Name);
                         sqlCmd.Parameters.AddWithValue("@TournamentDate", result.StartDate);
