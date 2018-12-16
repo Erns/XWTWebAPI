@@ -31,7 +31,7 @@ namespace XWTWebAPI.Controllers
                 {
                     sqlConn.Open();
 
-                    using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsSearch_REGISTERED_FOR", sqlConn))
+                    using (SqlCommand sqlCmd = new SqlCommand("dbo.spTournamentsSearch_GET_REGISTERED", sqlConn))
                     {
                         sqlCmd.CommandType = System.Data.CommandType.StoredProcedure;
                         sqlCmd.Parameters.AddWithValue("@UserAccountId", userid);
@@ -93,14 +93,18 @@ namespace XWTWebAPI.Controllers
                         {
                             while (sqlReader.Read())
                             {
-                                returnTournaments.Add(new TournamentMain(
-                                    sqlReader.GetInt32(sqlReader.GetOrdinal("Id")),
-                                    sqlReader.GetString(sqlReader.GetOrdinal("Name")),
-                                    sqlReader.GetDateTime(sqlReader.GetOrdinal("StartDate")),
-                                    sqlReader.GetInt32(sqlReader.GetOrdinal("MaxPoints")),
-                                    sqlReader.GetInt32(sqlReader.GetOrdinal("RoundTimeLength")),
-                                    sqlReader.GetBoolean(sqlReader.GetOrdinal("PublicSearch"))
-                                ));
+                                //returnTournaments.Add(new TournamentMain(
+                                //    sqlReader.GetInt32(sqlReader.GetOrdinal("Id")),
+                                //    sqlReader.GetString(sqlReader.GetOrdinal("Name")),
+                                //    sqlReader.GetDateTime(sqlReader.GetOrdinal("StartDate")),
+                                //    sqlReader.GetInt32(sqlReader.GetOrdinal("MaxPoints")),
+                                //    sqlReader.GetInt32(sqlReader.GetOrdinal("RoundTimeLength")),
+                                //    sqlReader.GetBoolean(sqlReader.GetOrdinal("PublicSearch"))
+                                //));
+
+                                TournamentsController tourns = new TournamentsController();
+
+                                returnTournaments.Add(JsonConvert.DeserializeObject<TournamentMain>(JsonConvert.DeserializeObject(tourns.Get(sqlReader.GetInt32(sqlReader.GetOrdinal("UserAccountId")), sqlReader.GetInt32(sqlReader.GetOrdinal("Id")))).ToString()));
                             }
                         }
                     }
